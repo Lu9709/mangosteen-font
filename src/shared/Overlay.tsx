@@ -1,6 +1,17 @@
 import { defineComponent, PropType } from 'vue';
-import { Icon } from './Icon';
+import { RouterLink } from 'vue-router';
+import { Icon, IconName } from './Icon';
 import s from './Overlay.module.scss';
+type NavbarItem = {
+  routerLink: string
+  iconName: IconName
+  content: string
+}
+const NavbarList: NavbarItem[] = [
+  { routerLink: '/statistics', iconName: 'charts', content: '统计图表' },
+  { routerLink: '/export', iconName: 'export', content: '导出数据' },
+  { routerLink: '/notify', iconName: 'notify', content: '记账提醒' },
+]
 export const Overlay = defineComponent({
   props: {
     onClose: {
@@ -17,27 +28,26 @@ export const Overlay = defineComponent({
     // const close = () => {
     //   emit('close')
     //}
+    const onClickSignIn = () => { }
     return () => <>
       <div class={s.mask} onClick={close}></div>
       <div class={s.overlay}>
-        <section>
+        <section class={s.currentUser} onClick={onClickSignIn}>
           <h2>未登录用户</h2>
           <p>点击这里登录</p>
         </section>
         <nav>
-          <ul>
-            <li>
-              <Icon name="charts" />
-              <span>统计图表</span>
-            </li>
-            <li>
-              <Icon name="export" />
-              <span>导出数据</span>
-            </li>
-            <li>
-              <Icon name="notify" />
-              <span>记账提醒</span>
-            </li>
+          <ul class={s.action_list}>
+            {
+              NavbarList.map(item => (
+                <li>
+                  <RouterLink to={item.routerLink} class={s.action}>
+                    <Icon name={item.iconName} class={s.icon} />
+                    <span>{item.content}</span>
+                  </RouterLink>
+                </li>
+              ))
+            }
           </ul>
         </nav>
       </div>
