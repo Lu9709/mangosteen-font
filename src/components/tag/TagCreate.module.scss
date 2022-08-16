@@ -9,6 +9,9 @@
   margin-top: 8px;
 }
 .formLabel {
+  .formItem_name {
+    line-height: 22px;
+  }
 }
 .formItem {
   min-height: var(--input-min-height);
@@ -39,5 +42,8 @@
     margin-top: 4px;
     color: var(--error-color);
     font-size: 12px;
+  }
+  &.error {
+    border-color: var(--error-color);
   }
 }
