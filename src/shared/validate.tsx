@@ -20,7 +20,8 @@ export const validate = <T extends FData>(formData: T, rules: Rules<T>) => {
     const value = formData[key]
     switch (type) {
       case 'required':
-        if (value === '' || value === null || value === undefined) {
+        if (isEmpty(value)) {
+          console.log(value,'value')
           errors[key] = errors[key] ?? []
           errors[key]?.push(message)
         }
@@ -36,4 +37,7 @@ export const validate = <T extends FData>(formData: T, rules: Rules<T>) => {
     }
   })
   return errors
+}
+const isEmpty = (value: null | undefined | string | number | FData ) => {
+  return value === null || value === undefined || value === ''
 }
