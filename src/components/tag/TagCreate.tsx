@@ -1,10 +1,10 @@
-import { defineComponent, PropType, reactive, toRaw } from 'vue'
+import { defineComponent, reactive, toRaw } from 'vue'
 import { MainLayout } from '../../layouts/MainLayout'
 import { Button } from '../../shared/Button'
 import { EmojiSelect } from '../../shared/EmojiSelect'
 import { Icon } from '../../shared/Icon'
 import { Rules, validate } from '../../shared/validate'
-import s from './TagCreate.module.scss'
+import s from './Tag.module.scss'
 export const TagCreate = defineComponent({
   setup: (props, context) => {
     const formData = reactive({
