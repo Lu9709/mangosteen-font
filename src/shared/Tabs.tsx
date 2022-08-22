@@ -8,6 +8,9 @@ export const Tabs = defineComponent({
     onUpdateSelected: {
       type: Function as PropType<(name: string) => void>,
       required: false
+    },
+    classPrefix: {
+      type: String as PropType<string>
     }
   },
   setup: (props, context) => {
@@ -19,13 +22,17 @@ export const Tabs = defineComponent({
           return new Error('<Tabs> only accepts <Tab> as children')
         }
       }
-      return <div class={s.tabs}>
-        <ol class={s.tabs_nav}>
+      const cp = props.classPrefix
+      return <div class={[s.tabs, cp + '_tabs']}>
+        <ol class={[s.tabs_nav, cp + '_tabs_nav']}>
           {
             tabs.map(item =>
-              <li class={item.props?.name === props.selected ? s.selected : ''}
-              // onClick={()=> props.onUpdateSelected?.(item.props?.name)}
-              onClick={()=> context.emit('update:selected', item.props?.name)}
+              <li class={[
+                item.props?.name === props.selected ? [s.selected, cp + '_selected'] : '',
+                cp + '_tabs_nav_item'
+              ]}
+                // onClick={()=> props.onUpdateSelected?.(item.props?.name)}
+                onClick={() => context.emit('update:selected', item.props?.name)}
               >
                 {item.props?.name}
               </li>

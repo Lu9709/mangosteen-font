@@ -2,18 +2,18 @@
   position: relative;
   &_nav {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     text-align: center;
     color: var(--navbar-text);
     position: sticky;
     z-index: 1;
     top: 0;
+    background: var(--navbar-bg-end);
     > li {
       flex-grow: 1;
       flex-shrink: 0;
       padding: 12px 0;
-      background: var(--navbar-bg-end);
       &.selected {
         position: relative;
         &::after {
