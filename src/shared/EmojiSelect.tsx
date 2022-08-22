@@ -1,4 +1,4 @@
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent, PropType, ref } from 'vue'
 import s from './EmojiSelect.module.scss'
 import { emojiList } from './emojiList'
 export const EmojiSelect = defineComponent({
