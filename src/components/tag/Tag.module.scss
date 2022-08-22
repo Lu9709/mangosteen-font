@@ -47,3 +47,11 @@
     border-color: var(--error-color);
   }
 }
+.actions{
+  padding: 0 16px 16px 16px;
+  display: flex;
+  justify-content: space-between;
+  .removeTags, .removeTagsAndItems{
+    width: calc(50% - 8px);
+  }
+}
