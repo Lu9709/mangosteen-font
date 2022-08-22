@@ -26,8 +26,13 @@
       border-color: var(--error-color);
     }
   }
-
+  &.emojiList {
+    &.error {
+      border-color: var(--error-color);
+    }
+  }
   &_name {
+    line-height: 22px;
   }
   &_value {
     display: flex;
