@@ -1,4 +1,5 @@
-import { defineComponent, PropType, reactive, ref } from 'vue';
+import { Overlay } from 'vant';
+import { defineComponent, PropType, reactive, ref, watchEffect } from 'vue';
 import { MainLayout } from '../../layouts/MainLayout';
 import { Icon } from '../../shared/Icon';
 import { Tab, Tabs } from '../../shared/Tabs';
@@ -7,6 +8,7 @@ import s from './ItemList.module.scss';
 import { ItemSummary } from './ItemSummary';
 export const ItemList = defineComponent({
   setup: (props, context) => {
+    const refSelected = ref('本月')
     const time = new Time()
     const customTime = reactive({
       start: new Time(),
@@ -26,13 +28,20 @@ export const ItemList = defineComponent({
         end: time.lastDayOfYear()
       }
     ]
-    const refSelected = ref('本月')
+    const refOverlayVisible = ref(false)
+    // 立即运行一个函数，同时响应式地追踪其依赖，依赖更改时重新执行
+    // 接受两个参数，1.运行的副作用函数；2.可选项
+    watchEffect(()=>{
+      if(refSelected.value === '自定义时间') {
+        refOverlayVisible.value = true
+      }
+    })
     return () => (
       <MainLayout>{
         {
           title: () => '山竹记账',
           icon: () => <Icon name="menu" />,
-          default: () => (
+          default: () => <>
             <Tabs classPrefix={'customTabs'} v-model:selected={refSelected.value}>
               <Tab name="本月">
               <ItemSummary
@@ -55,7 +64,24 @@ export const ItemList = defineComponent({
                   endDate={customTime.end.format()} />
               </Tab>
             </Tabs>
-          )
+            <Overlay show={refOverlayVisible.value} class={s.overlay} >
+              <div class={s.overlay_inner}>
+                <header>
+                  请选择时间
+                </header>
+                <main>
+                  <form>
+                    <div>
+
+                    </div>
+                    <div>
+
+                    </div>
+                  </form>
+                </main>
+              </div>
+            </Overlay>
+          </>
         }
       }</MainLayout>
     )
