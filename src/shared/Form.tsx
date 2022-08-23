@@ -1,5 +1,6 @@
 import { DatetimePicker, Popup } from 'vant';
 import { computed, defineComponent, PropType, ref } from 'vue'
+import { Button } from './Button';
 import { EmojiSelect } from './EmojiSelect';
 import s from './Form.module.scss'
 import { Time } from './time';
@@ -26,9 +27,12 @@ export const FormItem = defineComponent({
       type: [String, Number]
     },
     type: {
-      type: String as PropType<'text' | 'emojiSelect' | 'date'>
+      type: String as PropType<'text' | 'emojiSelect' | 'date' | 'validationCode'>
     },
     error: {
+      type: String
+    },
+    placeholder: {
       type: String
     }
   },
@@ -40,16 +44,27 @@ export const FormItem = defineComponent({
         case 'text':
           return <input
             value={props.modelValue}
+            placeholder={props.placeholder}
             onInput={(e: any) => context.emit('update:modelValue', e.target.value)}
-            class={[s.formItem, s.input, props.error === '　' ? '' : s.error]} />
+            class={[s.formItem, s.input, props.error ? s.error : '']} />
+        case 'validationCode':
+          return <>
+            <input class={[s.formItem, s.input, s.validationCodeInput, props.error ? s.error : '']}
+              onInput={(e: any) => context.emit('update:modelValue', e.target.value)}
+              placeholder={props.placeholder} />
+            <Button class={[s.formItem, s.button, s.validationCodeButton]}>
+              发送验证码
+            </Button>
+          </>
         case 'emojiSelect':
           return <EmojiSelect
             modelValue={props.modelValue?.toString()}
             onUpdateModelValue={value => context.emit('update:modelValue', value)}
-            class={[s.formItem, s.emojiList, props.error === '　' ? '' : s.error]} />
+            class={[s.formItem, s.emojiList, props.error ? s.error : '']} />
         case 'date':
           return <>
             <input readonly={true} value={props.modelValue}
+              placeholder={props.placeholder}
               onClick={() => { refDateVisible.value = true }}
               class={[s.formItem, s.input]} />
             <Popup position='bottom' v-model:show={refDateVisible.value}>
@@ -58,7 +73,7 @@ export const FormItem = defineComponent({
                   context.emit('update:modelValue', new Time(date).format())
                   refDateVisible.value = false
                 }}
-                onCancel={()=> refDateVisible.value = false}
+                onCancel={() => refDateVisible.value = false}
               />
             </Popup>
           </>
@@ -73,7 +88,9 @@ export const FormItem = defineComponent({
           <div class={s.formItem_value}>
             {content.value}
           </div>
-          {props.error && <div class={s.formItem_errorHint}><span>{props.error}</span></div>}
+          <div class={s.formItem_errorHint}>
+            <span>{props.error ?? '　'}</span>
+          </div>
         </label>
       </div>
     }
