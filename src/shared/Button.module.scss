@@ -1,4 +1,4 @@
-.button{
+.button {
   border: 1px solid var(--button-bg);
   padding: 8px 16px;
   background: var(--button-bg);
@@ -7,6 +7,7 @@
   border-radius: var(--button-radius);
   height: var(--button-height);
   &.normal {
+    color: inherit
   }
   &.important {
   }

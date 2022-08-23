@@ -1,6 +1,8 @@
 import { Overlay } from 'vant';
 import { defineComponent, PropType, reactive, ref, watchEffect } from 'vue';
 import { MainLayout } from '../../layouts/MainLayout';
+import { Button } from '../../shared/Button';
+import { Form, FormItem } from '../../shared/Form';
 import { Icon } from '../../shared/Icon';
 import { Tab, Tabs } from '../../shared/Tabs';
 import { Time } from '../../shared/time';
@@ -11,8 +13,8 @@ export const ItemList = defineComponent({
     const refSelected = ref('本月')
     const time = new Time()
     const customTime = reactive({
-      start: new Time(),
-      end: new Time()
+      start: new Time().format(),
+      end: new Time().format()
     })
     const timeList = [
       {
@@ -29,6 +31,10 @@ export const ItemList = defineComponent({
       }
     ]
     const refOverlayVisible = ref(false)
+    const onSubmitCustomTime = (e: Event) => {
+      e.preventDefault()
+      refOverlayVisible.value = false
+    }
     // 立即运行一个函数，同时响应式地追踪其依赖，依赖更改时重新执行
     // 接受两个参数，1.运行的副作用函数；2.可选项
     watchEffect(()=>{
@@ -60,8 +66,8 @@ export const ItemList = defineComponent({
               </Tab>
               <Tab name="自定义时间">
               <ItemSummary
-                  startDate={customTime.start.format()}
-                  endDate={customTime.end.format()} />
+                  startDate={customTime.start}
+                  endDate={customTime.end} />
               </Tab>
             </Tabs>
             <Overlay show={refOverlayVisible.value} class={s.overlay} >
@@ -70,14 +76,16 @@ export const ItemList = defineComponent({
                   请选择时间
                 </header>
                 <main>
-                  <form>
-                    <div>
-
-                    </div>
-                    <div>
-
-                    </div>
-                  </form>
+                  <Form onSubmit={onSubmitCustomTime}>
+                    <FormItem label='开始时间' v-model={customTime.start} type='date'/>
+                    <FormItem label='结束时间' v-model={customTime.end} type='date'/>
+                    <FormItem>
+                      <div class={s.actions}>
+                        <Button type='button' level='normal'>取消</Button>
+                        <Button type='submit' level='normal'>确定</Button>
+                      </div>
+                    </FormItem>
+                  </Form>
                 </main>
               </div>
             </Overlay>
