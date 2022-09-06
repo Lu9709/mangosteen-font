@@ -1,8 +1,8 @@
-import axios from 'axios'
 import { defineComponent, reactive, ref } from 'vue'
 import { MainLayout } from '../layouts/MainLayout'
 import { Button } from '../shared/Button'
 import { Form, FormItem } from '../shared/Form'
+import { http } from '../shared/Http'
 import { Icon } from '../shared/Icon'
 import { validate } from '../shared/validate'
 import s from './SignInPage.module.scss'
@@ -10,7 +10,7 @@ export const SignInPage = defineComponent({
   setup: (props, context) => {
     const refValidationCode = ref<any>()
     const formData = reactive({
-      email: '',
+      email: '919041098@qq.com',
       code: ''
     })
     const errors = reactive({
@@ -29,13 +29,17 @@ export const SignInPage = defineComponent({
         { key: 'code', type: 'pattern' , regex: /^\d{6}$/, message: '必须是六位数字'}
       ]))
     }
+    const onError = (error: any) => {
+      if (error.response.status === 422) {
+        Object.assign(errors, error.response.data.errors)
+      }
+      throw error
+    }
     const onClickSendValidationCode = async() => {
-      const response = await axios.post('/api/v1/validation_codes', { email: formData.email })
-        .catch(()=> {
-          // 失败
-        })
+      const response = await http
+      .post('/validation_codes', { email: formData.email })
+      .catch(onError)
       refValidationCode.value.startCount()
-      console.log(response)
     }
     return () => (
       <MainLayout>{
