@@ -3,6 +3,7 @@ import { useBool } from '../hooks/useBool'
 import { MainLayout } from '../layouts/MainLayout'
 import { Button } from '../shared/Button'
 import { Form, FormItem } from '../shared/Form'
+import { history } from '../shared/history'
 import { http } from '../shared/Http'
 import { Icon } from '../shared/Icon'
 import { hasError, validate } from '../shared/validate'
@@ -31,7 +32,9 @@ export const SignInPage = defineComponent({
         { key: 'code', type: 'pattern' , regex: /^\d{6}$/, message: '必须是六位数字'}
       ]))
       if(!hasError(errors)){
-        const response = await http.post('/session', formData)
+        const response = await http.post<{ jwt: string }>('/session', formData)
+        localStorage.setItem('jwt', response.data.jwt)
+        history.push('/')
       }
     }
     const onError = (error: any) => {
