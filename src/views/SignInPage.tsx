@@ -1,15 +1,17 @@
 import { defineComponent, reactive, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useBool } from '../hooks/useBool'
 import { MainLayout } from '../layouts/MainLayout'
 import { Button } from '../shared/Button'
 import { Form, FormItem } from '../shared/Form'
-import { history } from '../shared/history'
 import { http } from '../shared/Http'
 import { Icon } from '../shared/Icon'
 import { hasError, validate } from '../shared/validate'
 import s from './SignInPage.module.scss'
 export const SignInPage = defineComponent({
   setup: (props, context) => {
+    const router = useRouter()
+    const route = useRoute()
     const refValidationCode = ref<any>()
     const { ref: refDisabled, toggle, on: disabled, off: enable } = useBool(false)
     const formData = reactive({
@@ -34,7 +36,13 @@ export const SignInPage = defineComponent({
       if(!hasError(errors)){
         const response = await http.post<{ jwt: string }>('/session', formData)
         localStorage.setItem('jwt', response.data.jwt)
-        history.push('/')
+        // 两种写法
+        // 1. 跳转的时候拿到存在localStorage的returnTo用于跳转
+        // const returnTo = localStorage.getItem('returnTo')
+        // 2. 拿去路由内的参数用于return_to跳转
+        // 只需要其他地方使用 router.push('/sign_in?return_to='+ encodeURIComponent(route.fullPath))
+        const returnTo = route.query.return_to?.toString()
+        router.push(returnTo ||  '/')
       }
     }
     const onError = (error: any) => {
