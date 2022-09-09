@@ -35,6 +35,7 @@ export const SignInPage = defineComponent({
       ]))
       if(!hasError(errors)){
         const response = await http.post<{ jwt: string }>('/session', formData)
+        .catch(onError)
         localStorage.setItem('jwt', response.data.jwt)
         // 两种写法
         // 1. 跳转的时候拿到存在localStorage的returnTo用于跳转
