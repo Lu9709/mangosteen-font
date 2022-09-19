@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
-import { mockSession } from "../mock/mock";
+import { mockSession, mockTagIndex } from "../mock/mock";
 
 type GetConfig = Omit<AxiosRequestConfig, 'url' | 'params' | 'method'>
 type PostConfig = Omit<AxiosRequestConfig, 'url' |'data' | 'method'>
@@ -36,6 +36,10 @@ const mock = (response: AxiosResponse) => {
     && location.hostname !== '127.0.0.1'
     ) { return false }
   switch (response.config?.params?._mock) {
+    case 'tagIndex': 
+      [response.status, response.data] = mockTagIndex(response.config)
+      console.log(response)
+      return true
     case 'session':
       [response.status, response.data] = mockSession(response.config)
       return true
