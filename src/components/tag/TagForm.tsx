@@ -1,7 +1,10 @@
-import { defineComponent, PropType, reactive, toRaw } from 'vue'
+import { defineComponent, onMounted, PropType, reactive, toRaw } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { Button } from '../../shared/Button'
 import { Form, FormItem } from '../../shared/Form'
-import { Rules, validate } from '../../shared/validate'
+import { http } from '../../shared/Http'
+import { onFormError } from '../../shared/onFormError'
+import { hasError, Rules, validate } from '../../shared/validate'
 import s from './Tag.module.scss'
 export const TagForm = defineComponent({
   props: {
@@ -10,9 +13,16 @@ export const TagForm = defineComponent({
     }
   },
   setup: (props, context) => {
+    onMounted(() => {
+      const route = useRoute()
+      console.log(route.query.kind!.toString(),'route')
+    })
+    const route = useRoute()
+    const router = useRouter()
     const formData = reactive({
       name: '',
-      sign: ''
+      sign: '',
+      kind: route.query.kind!.toString()
     })
     const errors = reactive<{ [k in keyof typeof formData]?: string[] }>({})
     const rules: Rules<typeof formData> = [
@@ -20,18 +30,25 @@ export const TagForm = defineComponent({
       { key: 'name', type: 'pattern', regex: /^.{1,4}$/, message: '只能填 1 到 4 个字符' },
       { key: 'sign', type: 'required', message: '必填' },
     ]
-    const onSubmit = (e: Event) => {
-      console.log(toRaw(formData))
+    const onSubmit = async (e: Event) => {
+      e.preventDefault()
       Object.assign(errors, {
-        name: undefined,
-        sign: undefined
+        name: [],
+        sign: []
       })
       Object.assign(errors, validate(formData, rules))
-      e.preventDefault()
+      if(!hasError(errors)) {
+        const response = await http.post('/tags', formData, {
+          params: { _mock: 'TagCreate' }
+        }).catch((error) => {
+          onFormError(error, (data) => Object.assign(errors ,data.errors) )
+        })
+        router.back()
+      }
     }
     return () => (
       <Form onSubmit={onSubmit}>
-        <FormItem label='标签名'
+        <FormItem label='标签名（最多 4 个字符）'
           type='text' v-model={formData.name}
           error={errors['name']?.[0]}
         />
@@ -43,7 +60,7 @@ export const TagForm = defineComponent({
           <p class={s.tips}>记账时长按标签即可进行编辑</p>
         </FormItem>
         <FormItem>
-          <Button class={[s.button]}>确定</Button>
+          <Button type="submit" class={[s.button]}>确定</Button>
         </FormItem>
       </Form>
     )
