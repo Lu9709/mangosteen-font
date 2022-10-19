@@ -10,7 +10,8 @@ export const Tabs = defineComponent({
     //   required: false
     // },
     classPrefix: {
-      type: String as PropType<string>
+      type: String as PropType<string>,
+      default: ''
     }
   },
   emits: ['update:selected'],
